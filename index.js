@@ -69,3 +69,58 @@ const startingQuestions = () => {
             }
         });
 }
+
+const viewDepartments = () => {
+    db.query(
+        // views name of department as "Departments" for its title from the department db
+        "SELECT department.name AS Departments FROM department",
+        (err, results) => {
+            //console logs a table of the results
+            console.table(results);
+            //   goes back to start
+            startingQuestions();
+        }
+    );
+}
+
+const viewRoles = () => {
+    db.query(
+        // vies the role table, goes through the role table sub catagories (title and salary) to view. Also, sets the department of roll as "Department" and links keys to department table id
+        "SELECT role.title AS Role, role.salary AS Salary, department.name AS Department FROM role JOIN department ON role.department_id = department.id;",
+         (err, results) => {
+            console.table(results);
+            //   goes back to start
+            startingQuestions();
+        }
+    );
+}
+
+const viewEmployees = () => {
+    query("SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name AS department, roles.salary, CONCAT(mgr.first_name, mgr.last_name) AS manager FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id LEFT JOIN employee mgr ON employee.manager_id = mgr.id",
+        (err, rows) => {
+    if (err) return console.log(err);
+    console.table(rows);
+    InquirerPrompt();
+});
+    
+}
+
+const addDepartment = () => {
+
+}
+
+const addRole = () => {
+
+}
+
+const addEmployee = () => {
+
+}
+
+const updateDepartments = () => {
+
+}
+
+const updateEmployee = () => {
+
+}
