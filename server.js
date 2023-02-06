@@ -1,7 +1,7 @@
 // Grabs express, mysql, database, and my api via require method
 const express = require("express");
 const mysql = require("mysql2");
-const db = require("./db/connection");
+const connection = require("./connect");
 const api = require("index.js")
 // allows connection to 3rd party server *OR* my local server
 const PORT = process.env.PORT || 3001;

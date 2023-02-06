@@ -1,21 +1,17 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+const connection = require("./connect");
+
 require("dotenv").config();
 
 let currentRoles = [];
 let currentEmployees = [];
+const empSql = "Select * FROM employee"
+const roleSql = `SELECT name, id FROM department`;
 
-const db = mysql.createConnection(
-    {
-        host: "localhost",
-        user: "root",
-        password: process.env.PW,
-        database: "employee_db",
-    },
-    console.log(`Connected to the employee_db database.`)
-);
 
-db.connect(function (err) {
+
+connection.connect(function (err) {
     if (err) return console.log(err);
     startingQuestions();
 })
@@ -71,7 +67,7 @@ const startingQuestions = () => {
 }
 
 const viewDepartments = () => {
-    db.query(
+    connection.query(
         // views name of department as "Departments" for its title from the department db
         "SELECT department.name AS Departments FROM department",
         (err, results) => {
@@ -84,10 +80,10 @@ const viewDepartments = () => {
 }
 
 const viewRoles = () => {
-    db.query(
+    connection.query(
         // vies the role table, goes through the role table sub catagories (title and salary) to view. Also, sets the department of roll as "Department" and links keys to department table id
         "SELECT role.title AS Role, role.salary AS Salary, department.name AS Department FROM role JOIN department ON role.department_id = department.id;",
-         (err, results) => {
+        (err, results) => {
             console.table(results);
             //   goes back to start
             startingQuestions();
@@ -96,22 +92,78 @@ const viewRoles = () => {
 }
 
 const viewEmployees = () => {
-    query("SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name AS department, roles.salary, CONCAT(mgr.first_name, mgr.last_name) AS manager FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id LEFT JOIN employee mgr ON employee.manager_id = mgr.id",
-        (err, rows) => {
-    if (err) return console.log(err);
-    console.table(rows);
-    InquirerPrompt();
-});
-    
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, roles.title, department, roles.salary, CONCAT(mgr.first_name, mgr.last_name) AS manager FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id LEFT JOIN employee mgr ON employee.manager_id = mgr.id",
+        (err, results) => {
+            if (err) return console.log(err);
+            console.table(results);
+            InquirerPrompt();
+        });
+
 }
 
 const addDepartment = () => {
-
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'department',
+            message: "Name the department",
+        }
+    ])
+        .then(answer => {
+            const mysql = "INSERT INTO department (name) VALUES (?)";
+            connection.query(mysql, answer.department, (err, results) => {
+                if (err) return console.log(err);
+                console.log('Added' + answer.department + "to departments");
+                viewDepartments();
+            })
+        })
 }
 
 const addRole = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'roles',
+            message: "What is the role?",
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: "What is the yearly salary?",
+        },
 
-}
+    ])
+        .then(answer => {
+            // turns results into parameters for later query
+            const params = [answer.roles, answer.salary];
+
+            connection.query(roleSql, (err, data) => {
+                if (err) return console.log(err);
+                const department_var = data.map(({ name, id }) => ({ name: name, value: id }));
+
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'department_var',
+                        message: "What department is this role in?",
+                        choices: department_var
+                    }
+                ])
+                    .then(department_varChoice => {
+                        const department_var = department_varChoice.department_var;
+                        params.push(department_var);
+                        const mysql = 'INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)'
+
+                        connection.query(mysql, params, (err, result) => {
+                            if (err) return console.log(err);
+                            console.log('Added' + answer.roles + "to roles");
+                            showRoles();
+                        });
+                    });
+            });
+        });
+};
+
 
 const addEmployee = () => {
 
