@@ -96,11 +96,11 @@ const viewRoles = () => {
 }
 
 const viewEmployees = () => {
-    db.query("SELECT employee.id, employee.first_name, employee.last_name, roles.title, department, roles.salary, CONCAT(mgr.first_name, mgr.last_name) AS manager FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id LEFT JOIN employee mgr ON employee.manager_id = mgr.id",
+    db.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, CONCAT(mgr.first_name, mgr.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee mgr ON employee.manager_id = mgr.id",
         (err, results) => {
             if (err) return console.log(err);
             console.table(results);
-            InquirerPrompt();
+            startingQuestions();
         });
 
 }
@@ -157,12 +157,12 @@ const addRole = () => {
                     .then(department_varChoice => {
                         const department_var = department_varChoice.department_var;
                         params.push(department_var);
-                        const mysql = 'INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)'
+                        const mysql = 'INSERT INTO role (title, salary, department_id) VALUES (?,?,?)'
 
                         db.query(mysql, params, (err, result) => {
                             if (err) return console.log(err);
                             console.log("Added " + answer.roles + " to roles");
-                            showRoles();
+                            viewRoles();
                         });
                     });
             });
@@ -184,7 +184,7 @@ const addEmployee = () => {
         },
         {
             type: 'input',
-            name: 'roles',
+            name: 'role',
             message: "What is the role's ID number?",
         },
         {
@@ -197,10 +197,11 @@ const addEmployee = () => {
             db.query('INSERT INTO employee SET (?)', {
                 first_name: answer.firstname,
                 last_name: answer.lastname,
-                role_id: answer.roles,
+                role_id: answer.role,
                 manager_id: answer.manager
             })
             console.log(`${answer.firstname} ${answer.lastname} added to employees.`)
+            viewEmployees();
         }
 
         )
