@@ -1,13 +1,7 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 
-
 require("dotenv").config();
-
-// let currentRoles = [];
-// let currentEmployees = [];
-// const empSql = "Select * FROM employee"
-
 
 const db = mysql.createConnection(
     {

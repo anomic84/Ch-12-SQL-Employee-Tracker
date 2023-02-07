@@ -7,6 +7,7 @@
   - [Built with](#built-with)
   - [Installation](#installation)
   - [Usage](#usage)
+  - [Demo Video](#demo-video)
 - [Author](#author)
 - [Acknowledgments](#acknowledgments)
 ​
@@ -20,7 +21,7 @@
 ### Screenshot
 ​
 ![](https://i.imgur.com/w5u9uyu.png)
-​
+
 ### Links
 - [GitHub Repository](https://github.com/anomic84/Employee-Tracker)
 ​
@@ -65,7 +66,8 @@
 
     And the application will start!
 
-
+### Demo Video
+​[Demo Video](https://watch.screencastify.com/v/b8HW91qXvdgF3gf9OH7q)
 
 ## Author
     Spencer Carlson
