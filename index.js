@@ -194,12 +194,16 @@ const addEmployee = () => {
         },
     ])
         .then(answer => {
-            db.query('INSERT INTO employee SET (?)', {
-                first_name: answer.firstname,
-                last_name: answer.lastname,
-                role_id: answer.role,
-                manager_id: answer.manager
-            })
+            const role = parseInt(answer.role);
+            const manager = parseInt(answer.manager)
+
+            db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES(?,?,?,?)', [answer.firstname, answer.lastname, role, manager])
+            // {
+            //     first_name: answer.firstname,
+            //     last_name: answer.lastname,
+            //     role_id: answer.role,
+            //     manager_id: answer.manager
+            // })
             console.log(`${answer.firstname} ${answer.lastname} added to employees.`)
             viewEmployees();
         }
